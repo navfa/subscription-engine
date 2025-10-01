@@ -1,0 +1,27 @@
+# frozen_string_literal: true
+
+require_relative 'lib/subs_engine/version'
+
+Gem::Specification.new do |spec|
+  spec.name        = 'subs_engine'
+  spec.version     = SubsEngine::VERSION
+  spec.authors     = ['navfa']
+  spec.email       = ['navfastudios@proton.me']
+  spec.homepage    = 'https://github.com/navfa/subs_engine'
+  spec.summary     = 'Drop-in Rails 8 subscription billing engine'
+  spec.description = 'A mountable Rails 8 engine that gives SaaS apps production-ready subscription billing with Hotwire dashboards, usage metering, and Stripe webhooks.'
+  spec.license     = 'MIT'
+
+  spec.metadata['homepage_uri'] = spec.homepage
+  spec.metadata['source_code_uri'] = spec.homepage
+  spec.metadata['changelog_uri'] = "#{spec.homepage}/blob/main/CHANGELOG.md"
+  spec.metadata['rubygems_mfa_required'] = 'true'
+
+  spec.required_ruby_version = '>= 3.3.0'
+
+  spec.files = Dir.chdir(File.expand_path(__dir__)) do
+    Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
+  end
+
+  spec.add_dependency 'rails', '~> 8.0'
+end
