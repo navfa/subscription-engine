@@ -9,7 +9,8 @@ Gem::Specification.new do |spec|
   spec.email       = ['navfastudios@proton.me']
   spec.homepage    = 'https://github.com/navfa/subs_engine'
   spec.summary     = 'Drop-in Rails 8 subscription billing engine'
-  spec.description = 'A mountable Rails 8 engine that gives SaaS apps production-ready subscription billing with Hotwire dashboards, usage metering, and Stripe webhooks.'
+  spec.description = 'A mountable Rails 8 engine for production-ready subscription billing ' \
+                     'with Hotwire dashboards, usage metering, and Stripe webhooks.'
   spec.license     = 'MIT'
 
   spec.metadata['homepage_uri'] = spec.homepage
@@ -23,5 +24,8 @@ Gem::Specification.new do |spec|
     Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
   end
 
+  spec.add_dependency 'dry-monads', '~> 1.6'
   spec.add_dependency 'rails', '~> 8.0'
+  spec.add_dependency 'statesman', '~> 12.0'
+  spec.add_dependency 'stripe', '~> 12.0'
 end
