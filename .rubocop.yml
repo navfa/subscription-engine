@@ -40,6 +40,11 @@ Lint/EmptyBlock:
   Exclude:
     - 'config/routes.rb'
 
+Rails/DynamicFindBy:
+  Exclude:
+    - 'spec/repositories/**/*'
+    - 'app/repositories/**/*'
+
 Rails/SkipsModelValidations:
   Enabled: false
 

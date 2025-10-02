@@ -24,6 +24,9 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
 
+  FactoryBot.definition_file_paths = [File.expand_path('factories', __dir__)]
+  FactoryBot.find_definitions
+
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
