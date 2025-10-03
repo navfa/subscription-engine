@@ -4,8 +4,9 @@ module SubsEngine
   class Engine < ::Rails::Engine
     isolate_namespace SubsEngine
 
-    config.autoload_paths << root.join('app', 'repositories')
-    config.autoload_paths << root.join('app', 'state_machines')
+    %w[repositories state_machines gateways services].each do |dir|
+      config.autoload_paths << root.join('app', dir)
+    end
 
     initializer 'subs_engine.statesman' do
       Statesman.configure do
