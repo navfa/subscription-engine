@@ -2,6 +2,8 @@
 
 module SubsEngine
   class Plan < ApplicationRecord
+    has_many :subscriptions, dependent: :restrict_with_error
+
     enum :interval, { monthly: 0, yearly: 1 }
 
     validates :name, presence: true

@@ -5,6 +5,13 @@ module SubsEngine
     isolate_namespace SubsEngine
 
     config.autoload_paths << root.join('app', 'repositories')
+    config.autoload_paths << root.join('app', 'state_machines')
+
+    initializer 'subs_engine.statesman' do
+      Statesman.configure do
+        storage_adapter(Statesman::Adapters::ActiveRecord)
+      end
+    end
 
     config.generators do |g|
       g.test_framework :rspec

@@ -2,6 +2,8 @@
 
 module SubsEngine
   class Customer < ApplicationRecord
+    has_many :subscriptions, dependent: :restrict_with_error
+
     validates :external_id, presence: true, uniqueness: true
     validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
     validates :stripe_customer_id, uniqueness: true, allow_nil: true
