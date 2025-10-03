@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CreateSubsEnginePlans < ActiveRecord::Migration[8.0]
-  def change
+  def up
     create_table :subs_engine_plans, id: :uuid, default: 'gen_random_uuid()' do |t|
       t.string :name, null: false
       t.string :slug, null: false
@@ -16,5 +16,9 @@ class CreateSubsEnginePlans < ActiveRecord::Migration[8.0]
 
     add_index :subs_engine_plans, :slug, unique: true
     add_index :subs_engine_plans, :active
+  end
+
+  def down
+    drop_table :subs_engine_plans
   end
 end
