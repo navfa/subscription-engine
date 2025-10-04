@@ -8,6 +8,10 @@ module SubsEngine
       config.autoload_paths << root.join('app', dir)
     end
 
+    initializer 'subs_engine.stripe' do
+      Stripe.api_key = SubsEngine.configuration.stripe_api_key
+    end
+
     initializer 'subs_engine.statesman' do
       Statesman.configure do
         storage_adapter(Statesman::Adapters::ActiveRecord)
