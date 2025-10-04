@@ -68,11 +68,24 @@ user.subscribed?          # => true/false
 
 ## Development
 
+A `Makefile` is provided for convenience. Run `make help` to see all available commands.
+
 ```bash
-bundle install
-bundle exec rake db:create db:migrate
-bundle exec rspec
-bundle exec rubocop
+make setup       # Install dependencies and prepare the database
+make test        # Run the full test suite
+make test.focus  # Run only focused specs (fdescribe/fit/focus: true)
+make lint        # Run rubocop checks
+make lint.fix    # Run rubocop with auto-correct
+make console     # Open a Rails console via the dummy app
+```
+
+### Database
+
+```bash
+make db.create   # Create the test database
+make db.migrate  # Run pending migrations
+make db.rollback # Rollback the last migration
+make db.reset    # Drop, create and migrate the database
 ```
 
 ## License
