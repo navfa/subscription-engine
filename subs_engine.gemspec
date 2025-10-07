@@ -25,7 +25,9 @@ Gem::Specification.new do |spec|
   end
 
   spec.add_dependency 'dry-monads', '~> 1.6'
+  spec.add_dependency 'pundit', '~> 2.4'
   spec.add_dependency 'rails', '~> 8.0'
   spec.add_dependency 'statesman', '~> 12.0'
   spec.add_dependency 'stripe', '~> 12.0'
+  spec.add_dependency 'view_component', '~> 3.0'
 end

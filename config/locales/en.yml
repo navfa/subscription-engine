@@ -1,0 +1,6 @@
+en:
+  subs_engine:
+    plans:
+      created: "Plan created."
+      updated: "Plan updated."
+      deactivated: "Plan deactivated."

@@ -1,0 +1,4 @@
+<div id="<%= dom_id(plan) %>">
+  <h3><%= link_to plan.name, plan_path(plan) %></h3>
+  <p><%= plan.amount_cents %> <%= plan.currency.upcase %> / <%= plan.interval %></p>
+</div>

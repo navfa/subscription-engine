@@ -46,6 +46,7 @@ Rails/DynamicFindBy:
   Exclude:
     - 'spec/repositories/**/*'
     - 'app/repositories/**/*'
+    - 'app/controllers/**/*'
 
 Rails/SkipsModelValidations:
   Enabled: false
