@@ -51,6 +51,11 @@ Rails/DynamicFindBy:
 Rails/SkipsModelValidations:
   Enabled: false
 
+RSpec/VerifiedDoubles:
+  Exclude:
+    - 'spec/policies/**/*'
+    - 'spec/controllers/**/*'
+
 RSpec/ExampleLength:
   Max: 15
 

@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require 'dry/monads'
+require 'pundit'
 require 'statesman'
 require 'stripe'
+require 'view_component'
 
 require 'subs_engine/configuration'
 require 'subs_engine/version'

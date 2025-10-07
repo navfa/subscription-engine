@@ -5,6 +5,10 @@ require 'rails_helper'
 RSpec.describe SubsEngine::PlansController, type: :controller do
   routes { SubsEngine::Engine.routes }
 
+  let(:admin_user) { double('User', subs_engine_admin?: true) }
+
+  before { allow(controller).to receive(:pundit_user).and_return(admin_user) }
+
   describe 'GET #index' do
     it 'renders successfully' do
       create(:plan, active: true)
@@ -30,6 +34,16 @@ RSpec.describe SubsEngine::PlansController, type: :controller do
       get :new
 
       expect(response).to have_http_status(:ok)
+    end
+
+    context 'when user is not admin' do
+      let(:admin_user) { double('User', subs_engine_admin?: false) }
+
+      it 'returns forbidden' do
+        get :new
+
+        expect(response).to have_http_status(:forbidden)
+      end
     end
   end
 
