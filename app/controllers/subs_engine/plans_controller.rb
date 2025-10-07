@@ -20,30 +20,36 @@ module SubsEngine
     end
 
     def create
-      @plan = Plan.new(plan_params)
-      authorize @plan
+      authorize Plan.new
 
-      if @plan.save
-        redirect_to @plan, notice: t('subs_engine.plans.created')
-      else
-        render :new, status: :unprocessable_content
+      match_result(CreatePlan.new.call(plan_params)) do |m|
+        m.success { |plan| redirect_to plan, notice: t('subs_engine.plans.created') }
+        m.failure do |plan|
+          @plan = plan
+          render :new, status: :unprocessable_content
+        end
       end
     end
 
     def update
       authorize @plan
 
-      if @plan.update(plan_params)
-        redirect_to @plan, notice: t('subs_engine.plans.updated')
-      else
-        render :edit, status: :unprocessable_content
+      match_result(UpdatePlan.new.call(@plan, plan_params)) do |m|
+        m.success { |plan| redirect_to plan, notice: t('subs_engine.plans.updated') }
+        m.failure do |plan|
+          @plan = plan
+          render :edit, status: :unprocessable_content
+        end
       end
     end
 
     def deactivate
       authorize @plan
-      @plan.update!(active: false)
-      redirect_to plans_path, notice: t('subs_engine.plans.deactivated')
+
+      match_result(DeactivatePlan.new.call(@plan)) do |m|
+        m.success { redirect_to plans_path, notice: t('subs_engine.plans.deactivated') }
+        m.failure { redirect_to plans_path, alert: t('subs_engine.plans.already_inactive') }
+      end
     end
 
     private

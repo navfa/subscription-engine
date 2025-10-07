@@ -4,3 +4,4 @@ en:
       created: "Plan created."
       updated: "Plan updated."
       deactivated: "Plan deactivated."
+      already_inactive: "Plan is already inactive."
