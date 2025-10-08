@@ -10,9 +10,7 @@ RSpec.describe SubsEngine::StripeGateway do
     let(:stripe_customer) { Struct.new(:id).new('cus_test123') }
 
     context 'when stripe succeeds' do
-      before do
-        allow(Stripe::Customer).to receive(:create).and_return(stripe_customer)
-      end
+      before { allow(Stripe::Customer).to receive(:create).and_return(stripe_customer) }
 
       it 'returns Success with the stripe customer' do
         result = gateway.create_customer(email: email)
@@ -23,16 +21,75 @@ RSpec.describe SubsEngine::StripeGateway do
     end
 
     context 'when stripe fails' do
-      before do
-        allow(Stripe::Customer).to receive(:create)
-          .and_raise(Stripe::StripeError, 'Connection refused')
-      end
+      before { allow(Stripe::Customer).to receive(:create).and_raise(Stripe::StripeError, 'Connection refused') }
 
-      it 'returns Failure with the error message' do
+      it 'returns Failure[:stripe_error]' do
         result = gateway.create_customer(email: email)
 
         expect(result).to be_failure
         expect(result.failure).to eq([:stripe_error, 'Connection refused'])
+      end
+    end
+  end
+
+  describe '#create_subscription' do
+    let(:stripe_sub) { Struct.new(:id, :status).new('sub_123', 'active') }
+
+    context 'when stripe succeeds' do
+      before { allow(Stripe::Subscription).to receive(:create).and_return(stripe_sub) }
+
+      it 'returns Success with the stripe subscription' do
+        result = gateway.create_subscription(customer_id: 'cus_123', price_id: 'price_456')
+
+        expect(result).to be_success
+        expect(result.value!.id).to eq('sub_123')
+      end
+
+      it 'passes the correct params to stripe' do
+        gateway.create_subscription(customer_id: 'cus_123', price_id: 'price_456')
+
+        expect(Stripe::Subscription).to have_received(:create).with(
+          customer: 'cus_123',
+          items: [{ price: 'price_456' }],
+          metadata: {}
+        )
+      end
+    end
+
+    context 'when stripe fails' do
+      before { allow(Stripe::Subscription).to receive(:create).and_raise(Stripe::StripeError, 'Invalid customer') }
+
+      it 'returns Failure[:stripe_error]' do
+        result = gateway.create_subscription(customer_id: 'bad', price_id: 'price_456')
+
+        expect(result).to be_failure
+        expect(result.failure).to eq([:stripe_error, 'Invalid customer'])
+      end
+    end
+  end
+
+  describe '#cancel_subscription' do
+    let(:canceled_sub) { Struct.new(:id, :status).new('sub_123', 'canceled') }
+
+    context 'when stripe succeeds' do
+      before { allow(Stripe::Subscription).to receive(:cancel).and_return(canceled_sub) }
+
+      it 'returns Success with the canceled subscription' do
+        result = gateway.cancel_subscription(stripe_subscription_id: 'sub_123')
+
+        expect(result).to be_success
+        expect(result.value!.status).to eq('canceled')
+      end
+    end
+
+    context 'when stripe fails' do
+      before { allow(Stripe::Subscription).to receive(:cancel).and_raise(Stripe::StripeError, 'Not found') }
+
+      it 'returns Failure[:stripe_error]' do
+        result = gateway.cancel_subscription(stripe_subscription_id: 'sub_bad')
+
+        expect(result).to be_failure
+        expect(result.failure).to eq([:stripe_error, 'Not found'])
       end
     end
   end

@@ -22,5 +22,9 @@ FactoryBot.define do
       name { 'Free' }
       amount_cents { 0 }
     end
+
+    trait :with_stripe do
+      sequence(:stripe_price_id) { |n| "price_test#{n}" }
+    end
   end
 end
