@@ -22,9 +22,9 @@ RSpec.describe SubsEngine::DeactivatePlan do
   context 'when plan is already inactive' do
     let(:plan) { create(:plan, :inactive) }
 
-    it 'returns Failure(:already_inactive)' do
+    it 'returns Failure[:already_inactive]' do
       expect(result).to be_failure
-      expect(result.failure).to eq(:already_inactive)
+      expect(result.failure).to match([:already_inactive, an_instance_of(SubsEngine::Plan)])
     end
   end
 end

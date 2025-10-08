@@ -22,9 +22,9 @@ RSpec.describe SubsEngine::CreatePlan do
   context 'with invalid params' do
     let(:params) { { name: '', slug: '' } }
 
-    it 'returns Failure with the plan containing errors' do
+    it 'returns Failure[:validation_failed] with the plan' do
       expect(result).to be_failure
-      expect(result.failure.errors).not_to be_empty
+      expect(result.failure).to match([:validation_failed, an_instance_of(SubsEngine::Plan)])
     end
 
     it 'does not persist' do

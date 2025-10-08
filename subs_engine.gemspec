@@ -24,7 +24,6 @@ Gem::Specification.new do |spec|
     Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
   end
 
-  spec.add_dependency 'dry-matcher', '~> 1.0'
   spec.add_dependency 'dry-monads', '~> 1.6'
   spec.add_dependency 'pundit', '~> 2.4'
   spec.add_dependency 'rails', '~> 8.0'

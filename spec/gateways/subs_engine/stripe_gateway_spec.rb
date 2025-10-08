@@ -32,7 +32,7 @@ RSpec.describe SubsEngine::StripeGateway do
         result = gateway.create_customer(email: email)
 
         expect(result).to be_failure
-        expect(result.failure).to eq(stripe_error: 'Connection refused')
+        expect(result.failure).to eq([:stripe_error, 'Connection refused'])
       end
     end
   end

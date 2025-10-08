@@ -22,33 +22,35 @@ module SubsEngine
     def create
       authorize Plan.new
 
-      match_result(CreatePlan.new.call(plan_params)) do |m|
-        m.success { |plan| redirect_to plan, notice: t('subs_engine.plans.created') }
-        m.failure do |plan|
-          @plan = plan
-          render :new, status: :unprocessable_content
-        end
+      case CreatePlan.new.call(plan_params)
+      in Success(plan)
+        redirect_to plan, notice: t('subs_engine.plans.created')
+      in Failure[:validation_failed, plan]
+        @plan = plan
+        render :new, status: :unprocessable_content
       end
     end
 
     def update
       authorize @plan
 
-      match_result(UpdatePlan.new.call(@plan, plan_params)) do |m|
-        m.success { |plan| redirect_to plan, notice: t('subs_engine.plans.updated') }
-        m.failure do |plan|
-          @plan = plan
-          render :edit, status: :unprocessable_content
-        end
+      case UpdatePlan.new.call(@plan, plan_params)
+      in Success(plan)
+        redirect_to plan, notice: t('subs_engine.plans.updated')
+      in Failure[:validation_failed, plan]
+        @plan = plan
+        render :edit, status: :unprocessable_content
       end
     end
 
     def deactivate
       authorize @plan
 
-      match_result(DeactivatePlan.new.call(@plan)) do |m|
-        m.success { redirect_to plans_path, notice: t('subs_engine.plans.deactivated') }
-        m.failure { redirect_to plans_path, alert: t('subs_engine.plans.already_inactive') }
+      case DeactivatePlan.new.call(@plan)
+      in Success
+        redirect_to plans_path, notice: t('subs_engine.plans.deactivated')
+      in Failure[:already_inactive, *]
+        redirect_to plans_path, alert: t('subs_engine.plans.already_inactive')
       end
     end
 
