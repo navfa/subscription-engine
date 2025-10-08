@@ -57,7 +57,9 @@ module SubsEngine
     private
 
     def set_plan
-      @plan = plan_repository.find_by_id(params[:id]) || raise(ActiveRecord::RecordNotFound)
+      @plan = plan_repository.find_by_id(params[:id]).value_or do
+        raise ActiveRecord::RecordNotFound
+      end
     end
 
     def plan_params
