@@ -5,3 +5,10 @@ en:
       updated: "Plan updated."
       deactivated: "Plan deactivated."
       already_inactive: "Plan is already inactive."
+    subscriptions:
+      created: "Subscription activated."
+      canceled: "Subscription canceled."
+      plan_inactive: "This plan is no longer available."
+      already_subscribed: "You already have an active subscription."
+      already_canceled: "This subscription is already canceled."
+      stripe_error: "Payment processing failed. Please try again."

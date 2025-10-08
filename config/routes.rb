@@ -6,4 +6,6 @@ SubsEngine::Engine.routes.draw do
       patch :deactivate
     end
   end
+
+  resources :subscriptions, only: [:show, :create, :destroy]
 end

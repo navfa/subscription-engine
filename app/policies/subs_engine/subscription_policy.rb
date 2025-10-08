@@ -10,6 +10,10 @@ module SubsEngine
       owner?
     end
 
+    def destroy?
+      cancel?
+    end
+
     private
 
     def owner?
