@@ -1,0 +1,17 @@
+<div id="<%= dom_id(subscription, :status) %>" class="subs-status">
+  <span class="<%= badge_class %>"><%= label %></span>
+
+  <% if subscription.current_period_start.present? %>
+    <p class="subs-status__period">
+      <%= subscription.current_period_start.to_date %> — <%= subscription.current_period_end&.to_date %>
+    </p>
+  <% end %>
+
+  <% if cancelable? %>
+    <%= button_to "Cancel Subscription",
+        helpers.subscription_path(subscription),
+        method: :delete,
+        class: "subs-btn subs-btn--danger",
+        data: { turbo_confirm: "Are you sure you want to cancel?" } %>
+  <% end %>
+</div>

@@ -1,0 +1,16 @@
+<div id="<%= dom_id(plan) %>" class="subs-plan-card">
+  <h3 class="subs-plan-card__name">
+    <%= link_to plan.name, helpers.plan_path(plan) %>
+  </h3>
+
+  <p class="subs-plan-card__price">
+    <strong><%= formatted_price %></strong> / <%= interval_label %>
+  </p>
+
+  <% if subscribable? %>
+    <%= button_to "Subscribe",
+        helpers.subscriptions_path(plan_id: plan.id),
+        method: :post,
+        class: "subs-btn subs-btn--primary" %>
+  <% end %>
+</div>

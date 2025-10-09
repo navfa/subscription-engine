@@ -1,0 +1,40 @@
+<%= form_with(model: plan, url: form_url, method: form_method) do |f| %>
+  <% if plan.errors.any? %>
+    <div class="subs-form-errors">
+      <ul>
+        <% plan.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="subs-field">
+    <%= f.label :name %>
+    <%= f.text_field :name, class: "subs-input" %>
+  </div>
+
+  <div class="subs-field">
+    <%= f.label :slug %>
+    <%= f.text_field :slug, class: "subs-input" %>
+  </div>
+
+  <div class="subs-field">
+    <%= f.label :interval %>
+    <%= f.select :interval, intervals, {}, class: "subs-input" %>
+  </div>
+
+  <div class="subs-field">
+    <%= f.label :amount_cents, "Amount (cents)" %>
+    <%= f.number_field :amount_cents, class: "subs-input" %>
+  </div>
+
+  <div class="subs-field">
+    <%= f.label :currency %>
+    <%= f.text_field :currency, maxlength: 3, class: "subs-input" %>
+  </div>
+
+  <div class="subs-actions">
+    <%= f.submit submit_label, class: "subs-btn subs-btn--primary" %>
+  </div>
+<% end %>

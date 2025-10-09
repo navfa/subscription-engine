@@ -8,7 +8,7 @@ module SubsEngine
       authorize @subscription
     end
 
-    def create
+    def create # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       customer = customer_repository.find_by_external_id(pundit_user.id.to_s).value_or do
         return head :not_found
       end

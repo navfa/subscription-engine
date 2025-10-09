@@ -4,6 +4,6 @@
 
 <div id="plans">
   <% @plans.each do |plan| %>
-    <%= render 'plan', plan: plan %>
+    <%= render SubsEngine::PlanCardComponent.new(plan: plan, subscribable: true) %>
   <% end %>
 </div>
