@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_07_000001) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_10_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -77,6 +77,19 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_07_000001) do
     t.index ["customer_id"], name: "index_subs_engine_subscriptions_on_customer_id"
     t.index ["plan_id"], name: "index_subs_engine_subscriptions_on_plan_id"
     t.index ["stripe_subscription_id"], name: "index_subs_engine_subscriptions_on_stripe_subscription_id", unique: true
+  end
+
+  create_table "subs_engine_webhook_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "error_message"
+    t.string "event_type", null: false
+    t.jsonb "payload", default: {}, null: false
+    t.integer "status", default: 0, null: false
+    t.string "stripe_event_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_type"], name: "index_subs_engine_webhook_events_on_event_type"
+    t.index ["status"], name: "index_subs_engine_webhook_events_on_status"
+    t.index ["stripe_event_id"], name: "index_subs_engine_webhook_events_on_stripe_event_id", unique: true
   end
 
   add_foreign_key "subs_engine_subscription_transitions", "subs_engine_subscriptions", column: "subscription_id"
