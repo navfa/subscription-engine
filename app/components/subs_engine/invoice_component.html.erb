@@ -1,0 +1,30 @@
+<div id="<%= dom_id(invoice) %>" class="subs-invoice">
+  <div class="subs-invoice__header">
+    <span class="<%= status_badge_class %>"><%= invoice.status.humanize %></span>
+    <strong><%= formatted_total %></strong>
+    <span class="subs-invoice__period"><%= period_label %></span>
+  </div>
+
+  <% if invoice.line_items.any? %>
+    <table class="subs-invoice__lines">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Qty</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% invoice.line_items.each do |item| %>
+          <tr>
+            <td><%= item.description %></td>
+            <td><%= item.quantity %></td>
+            <td><%= Kernel.format('%<amount>.2f', amount: item.amount_cents / 100.0) %> <%= item.currency.upcase %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <%= link_to 'Download PDF', helpers.invoice_path(invoice, format: :pdf), class: 'subs-btn' %>
+</div>

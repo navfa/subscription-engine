@@ -5,6 +5,8 @@ require 'pundit'
 require 'statesman'
 require 'stripe'
 require 'view_component'
+require 'prawn'
+require 'prawn/table'
 
 require 'subs_engine/configuration'
 require 'subs_engine/version'

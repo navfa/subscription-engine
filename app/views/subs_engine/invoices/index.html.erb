@@ -1,0 +1,9 @@
+<h1>Invoices</h1>
+
+<% if @invoices.any? %>
+  <% @invoices.each do |invoice| %>
+    <%= render SubsEngine::InvoiceComponent.new(invoice: invoice) %>
+  <% end %>
+<% else %>
+  <p>No invoices yet.</p>
+<% end %>
