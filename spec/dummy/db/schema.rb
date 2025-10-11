@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_10_000001) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_11_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -31,6 +31,37 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_10_000001) do
     t.index ["email"], name: "index_subs_engine_customers_on_email"
     t.index ["external_id"], name: "index_subs_engine_customers_on_external_id", unique: true
     t.index ["stripe_customer_id"], name: "index_subs_engine_customers_on_stripe_customer_id", unique: true
+  end
+
+  create_table "subs_engine_invoice_line_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "amount_cents", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.string "currency", default: "usd", null: false
+    t.string "description", null: false
+    t.uuid "invoice_id", null: false
+    t.integer "line_type", default: 0, null: false
+    t.integer "quantity", default: 1, null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id"], name: "index_subs_engine_invoice_line_items_on_invoice_id"
+  end
+
+  create_table "subs_engine_invoices", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "amount_cents", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.string "currency", default: "usd", null: false
+    t.uuid "customer_id", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "paid_at"
+    t.datetime "period_end"
+    t.datetime "period_start"
+    t.integer "status", default: 0, null: false
+    t.string "stripe_invoice_id"
+    t.uuid "subscription_id"
+    t.datetime "updated_at", null: false
+    t.index ["customer_id", "status"], name: "index_subs_engine_invoices_on_customer_id_and_status"
+    t.index ["customer_id"], name: "index_subs_engine_invoices_on_customer_id"
+    t.index ["stripe_invoice_id"], name: "index_subs_engine_invoices_on_stripe_invoice_id", unique: true
+    t.index ["subscription_id"], name: "index_subs_engine_invoices_on_subscription_id"
   end
 
   create_table "subs_engine_plans", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -92,6 +123,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_10_000001) do
     t.index ["stripe_event_id"], name: "index_subs_engine_webhook_events_on_stripe_event_id", unique: true
   end
 
+  add_foreign_key "subs_engine_invoice_line_items", "subs_engine_invoices", column: "invoice_id"
+  add_foreign_key "subs_engine_invoices", "subs_engine_customers", column: "customer_id"
+  add_foreign_key "subs_engine_invoices", "subs_engine_subscriptions", column: "subscription_id"
   add_foreign_key "subs_engine_subscription_transitions", "subs_engine_subscriptions", column: "subscription_id"
   add_foreign_key "subs_engine_subscriptions", "subs_engine_customers", column: "customer_id"
   add_foreign_key "subs_engine_subscriptions", "subs_engine_plans", column: "plan_id"

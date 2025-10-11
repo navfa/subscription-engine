@@ -18,6 +18,21 @@ module SubsEngine
       end
     end
 
+    def update_subscription(stripe_subscription_id:, new_price_id:, prorate: true)
+      stripe_call do
+        sub = Stripe::Subscription.retrieve(stripe_subscription_id)
+        Stripe::Subscription.update(
+          stripe_subscription_id,
+          items: [{ id: sub.items.data[0].id, price: new_price_id }],
+          proration_behavior: prorate ? 'create_prorations' : 'none'
+        )
+      end
+    end
+
+    def retrieve_invoice(stripe_invoice_id:)
+      stripe_call { Stripe::Invoice.retrieve(stripe_invoice_id) }
+    end
+
     def cancel_subscription(stripe_subscription_id:, prorate: true)
       stripe_call do
         Stripe::Subscription.cancel(
