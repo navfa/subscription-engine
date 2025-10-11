@@ -7,7 +7,7 @@ SubsEngine::Engine.routes.draw do
     end
   end
 
-  resources :subscriptions, only: [:show, :create, :destroy]
+  resources :subscriptions, only: [:show, :create, :update, :destroy]
   resources :invoices, only: [:index, :show]
 
   post 'webhooks/stripe', to: 'stripe_webhooks#create'

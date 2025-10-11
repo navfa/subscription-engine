@@ -12,3 +12,6 @@ en:
       already_subscribed: "You already have an active subscription."
       already_canceled: "This subscription is already canceled."
       stripe_error: "Payment processing failed. Please try again."
+      plan_changed: "Plan changed successfully."
+      same_plan: "You are already on this plan."
+      subscription_not_active: "Only active subscriptions can change plans."

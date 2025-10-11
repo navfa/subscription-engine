@@ -2,10 +2,11 @@
 
 module SubsEngine
   class SubscriptionsController < ApplicationController
-    before_action :set_subscription, only: [:show, :destroy]
+    before_action :set_subscription, only: [:show, :update, :destroy]
 
     def show
       authorize @subscription
+      @available_plans = plan_repository.find_active.where.not(id: @subscription.plan_id)
     end
 
     def create # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
@@ -26,6 +27,27 @@ module SubsEngine
         redirect_to plans_path, alert: t('subs_engine.subscriptions.already_subscribed')
       in Failure[:stripe_error, message]
         redirect_to plans_path, alert: t('subs_engine.subscriptions.stripe_error')
+      end
+    end
+
+    def update # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+      authorize @subscription
+
+      new_plan = plan_repository.find_by_id(params[:subscription][:plan_id]).value_or do
+        return redirect_to @subscription, alert: t('subs_engine.subscriptions.plan_inactive')
+      end
+
+      case ChangePlan.new.call(subscription: @subscription, new_plan: new_plan)
+      in Success(subscription)
+        redirect_to subscription, notice: t('subs_engine.subscriptions.plan_changed')
+      in Failure[:same_plan, *]
+        redirect_to @subscription, alert: t('subs_engine.subscriptions.same_plan')
+      in Failure[:plan_inactive, *]
+        redirect_to @subscription, alert: t('subs_engine.subscriptions.plan_inactive')
+      in Failure[:subscription_not_active, *]
+        redirect_to @subscription, alert: t('subs_engine.subscriptions.subscription_not_active')
+      in Failure[:stripe_error, *]
+        redirect_to @subscription, alert: t('subs_engine.subscriptions.stripe_error')
       end
     end
 

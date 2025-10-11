@@ -14,6 +14,10 @@ module SubsEngine
       cancel?
     end
 
+    def update?
+      owner?
+    end
+
     private
 
     def owner?

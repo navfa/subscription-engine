@@ -2,4 +2,16 @@
 
 <%= render SubsEngine::SubscriptionStatusComponent.new(subscription: @subscription) %>
 
+<% if @subscription.current_state == 'active' && @available_plans.any? %>
+  <div class="subs-change-plan">
+    <h2>Change Plan</h2>
+    <%= form_with url: subscription_path(@subscription), scope: :subscription, method: :patch, class: 'subs-change-plan__form' do |f| %>
+      <%= f.select :plan_id, @available_plans.map { |p| [p.name, p.id] },
+                   { prompt: 'Select a new plan' },
+                   class: 'subs-select' %>
+      <%= f.submit 'Change Plan', class: 'subs-btn' %>
+    <% end %>
+  </div>
+<% end %>
+
 <%= link_to "Back to Plans", plans_path %>

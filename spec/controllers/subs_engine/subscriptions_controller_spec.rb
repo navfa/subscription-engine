@@ -55,6 +55,36 @@ RSpec.describe SubsEngine::SubscriptionsController, type: :controller do
     end
   end
 
+  describe 'PATCH #update' do
+    let(:customer) { create(:customer, :with_stripe, external_id: '42') }
+    let(:subscription) { create(:subscription, :with_stripe, customer: customer) }
+    let(:new_plan) { create(:plan, :with_stripe, name: 'Pro', stripe_price_id: 'price_pro') }
+
+    before do
+      subscription.transition_to(:active)
+      stripe_sub = Struct.new(:id, :status, :items).new(
+        subscription.stripe_subscription_id,
+        'active',
+        Struct.new(:data).new([Struct.new(:id).new('si_123')])
+      )
+      allow(Stripe::Subscription).to receive_messages(retrieve: stripe_sub, update: stripe_sub)
+    end
+
+    it 'changes the plan and redirects' do
+      patch :update, params: { id: subscription.id, subscription: { plan_id: new_plan.id } }
+
+      expect(response).to have_http_status(:redirect)
+      expect(subscription.reload.plan).to eq(new_plan)
+    end
+
+    it 'rejects changing to the same plan' do
+      patch :update, params: { id: subscription.id, subscription: { plan_id: subscription.plan_id } }
+
+      expect(response).to have_http_status(:redirect)
+      expect(flash[:alert]).to eq(I18n.t('subs_engine.subscriptions.same_plan'))
+    end
+  end
+
   describe 'DELETE #destroy' do
     let(:customer) { create(:customer, :with_stripe, external_id: '42') }
     let(:subscription) { create(:subscription, :with_stripe, customer: customer) }

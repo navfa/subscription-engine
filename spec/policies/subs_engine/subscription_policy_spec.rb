@@ -13,6 +13,7 @@ RSpec.describe SubsEngine::SubscriptionPolicy do
 
     it { is_expected.to be_show }
     it { is_expected.to be_cancel }
+    it { is_expected.to be_update }
   end
 
   context 'when user is an admin but not the owner' do
@@ -20,6 +21,7 @@ RSpec.describe SubsEngine::SubscriptionPolicy do
 
     it { is_expected.to be_show }
     it { is_expected.not_to be_cancel }
+    it { is_expected.not_to be_update }
   end
 
   context 'when user is neither owner nor admin' do
@@ -27,5 +29,6 @@ RSpec.describe SubsEngine::SubscriptionPolicy do
 
     it { is_expected.not_to be_show }
     it { is_expected.not_to be_cancel }
+    it { is_expected.not_to be_update }
   end
 end
