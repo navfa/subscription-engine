@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_11_000002) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_18_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -110,6 +110,31 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_11_000002) do
     t.index ["stripe_subscription_id"], name: "index_subs_engine_subscriptions_on_stripe_subscription_id", unique: true
   end
 
+  create_table "subs_engine_usage_metrics", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "stripe_price_id"
+    t.string "unit", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_subs_engine_usage_metrics_on_active"
+    t.index ["code"], name: "index_subs_engine_usage_metrics_on_code", unique: true
+  end
+
+  create_table "subs_engine_usage_records", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "customer_id", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.integer "quantity", null: false
+    t.datetime "recorded_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "usage_metric_id", null: false
+    t.index ["customer_id", "usage_metric_id", "recorded_at"], name: "idx_usage_records_customer_metric_time"
+    t.index ["customer_id"], name: "index_subs_engine_usage_records_on_customer_id"
+    t.index ["usage_metric_id"], name: "index_subs_engine_usage_records_on_usage_metric_id"
+  end
+
   create_table "subs_engine_webhook_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "error_message"
@@ -129,4 +154,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_11_000002) do
   add_foreign_key "subs_engine_subscription_transitions", "subs_engine_subscriptions", column: "subscription_id"
   add_foreign_key "subs_engine_subscriptions", "subs_engine_customers", column: "customer_id"
   add_foreign_key "subs_engine_subscriptions", "subs_engine_plans", column: "plan_id"
+  add_foreign_key "subs_engine_usage_records", "subs_engine_customers", column: "customer_id"
+  add_foreign_key "subs_engine_usage_records", "subs_engine_usage_metrics", column: "usage_metric_id"
 end
