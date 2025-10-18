@@ -68,6 +68,46 @@ RSpec.describe SubsEngine::StripeGateway do
     end
   end
 
+  describe '#report_usage' do
+    let(:usage_record) { Struct.new(:id, :quantity).new('mbur_123', 100) }
+
+    context 'when stripe succeeds' do
+      before { allow(Stripe::SubscriptionItem).to receive(:create_usage_record).and_return(usage_record) }
+
+      it 'returns Success with the usage record' do
+        result = gateway.report_usage(subscription_item_id: 'si_123', quantity: 100)
+
+        expect(result).to be_success
+        expect(result.value!.quantity).to eq(100)
+      end
+
+      it 'passes action: set for idempotent reporting' do
+        gateway.report_usage(subscription_item_id: 'si_123', quantity: 100, timestamp: 1_697_500_000)
+
+        expect(Stripe::SubscriptionItem).to have_received(:create_usage_record).with(
+          'si_123',
+          quantity: 100,
+          timestamp: 1_697_500_000,
+          action: 'set'
+        )
+      end
+    end
+
+    context 'when stripe fails' do
+      before do
+        allow(Stripe::SubscriptionItem).to receive(:create_usage_record)
+          .and_raise(Stripe::StripeError, 'Invalid item')
+      end
+
+      it 'returns Failure[:stripe_error]' do
+        result = gateway.report_usage(subscription_item_id: 'si_bad', quantity: 100)
+
+        expect(result).to be_failure
+        expect(result.failure).to eq([:stripe_error, 'Invalid item'])
+      end
+    end
+  end
+
   describe '#cancel_subscription' do
     let(:canceled_sub) { Struct.new(:id, :status).new('sub_123', 'canceled') }
 

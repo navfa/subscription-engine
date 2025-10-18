@@ -13,6 +13,7 @@ FactoryBot.define do
 
     trait :with_stripe do
       sequence(:stripe_subscription_id) { |n| "sub_test#{n}" }
+      sequence(:stripe_subscription_item_id) { |n| "si_test#{n}" }
     end
   end
 

@@ -33,6 +33,17 @@ module SubsEngine
       stripe_call { Stripe::Invoice.retrieve(stripe_invoice_id) }
     end
 
+    def report_usage(subscription_item_id:, quantity:, timestamp: Time.current.to_i)
+      stripe_call do
+        Stripe::SubscriptionItem.create_usage_record(
+          subscription_item_id,
+          quantity: quantity,
+          timestamp: timestamp,
+          action: 'set'
+        )
+      end
+    end
+
     def cancel_subscription(stripe_subscription_id:, prorate: true)
       stripe_call do
         Stripe::Subscription.cancel(

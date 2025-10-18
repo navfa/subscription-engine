@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_18_000002) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_18_000003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -102,6 +102,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_18_000002) do
     t.jsonb "metadata", default: {}, null: false
     t.uuid "plan_id", null: false
     t.string "stripe_subscription_id"
+    t.string "stripe_subscription_item_id"
     t.datetime "trial_end"
     t.datetime "updated_at", null: false
     t.index ["customer_id", "plan_id"], name: "index_subs_engine_subscriptions_on_customer_id_and_plan_id"
