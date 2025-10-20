@@ -2,28 +2,39 @@
 
 module SubsEngine
   class CreateStripeCustomer
-    include Dry::Monads[:result, :do]
+    extend Dry::Initializer
+    include Dry::Monads[:result]
 
-    def call(customer, gateway: StripeGateway.new)
-      yield validate_not_connected(customer)
-      stripe_customer = yield gateway.create_customer(
-        email: customer.email,
-        metadata: { subs_engine_id: customer.id }
-      )
-      persist_stripe_id(customer, stripe_customer)
+    option :gateway, default: -> { StripeGateway.new }
+
+    def call(customer)
+      @customer = customer
+
+      validate_not_connected.bind do
+        create_on_stripe.bind do |stripe_customer|
+          persist_stripe_id(stripe_customer)
+        end
+      end
     end
 
     private
 
-    def validate_not_connected(customer)
-      return Failure[:already_connected, customer] if customer.stripe_connected?
+    def validate_not_connected
+      return Failure[:already_connected, @customer] if @customer.stripe_connected?
 
-      Success(customer)
+      Success(@customer)
     end
 
-    def persist_stripe_id(customer, stripe_customer)
-      customer.update(stripe_customer_id: stripe_customer.id)
-      Success(customer)
+    def create_on_stripe
+      gateway.create_customer(
+        email: @customer.email,
+        metadata: { subs_engine_id: @customer.id }
+      )
+    end
+
+    def persist_stripe_id(stripe_customer)
+      @customer.update(stripe_customer_id: stripe_customer.id)
+      Success(@customer)
     end
   end
 end

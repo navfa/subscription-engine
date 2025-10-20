@@ -23,7 +23,12 @@ RSpec.describe SubsEngine::SubscriptionsController, type: :controller do
   describe 'POST #create' do
     let(:customer) { create(:customer, :with_stripe, external_id: '42') }
     let(:plan) { create(:plan, :with_stripe) }
-    let(:stripe_sub) { Struct.new(:id, :status).new('sub_new', 'active') }
+    let(:stripe_sub) do
+      Struct.new(:id, :status, :items).new(
+        'sub_new', 'active',
+        Struct.new(:data).new([Struct.new(:id).new('si_new')])
+      )
+    end
 
     before do
       customer
@@ -99,7 +104,7 @@ RSpec.describe SubsEngine::SubscriptionsController, type: :controller do
       delete :destroy, params: { id: subscription.id }
 
       expect(response).to have_http_status(:redirect)
-      expect(subscription.current_state).to eq('canceled')
+      expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::CANCELED)
     end
   end
 end

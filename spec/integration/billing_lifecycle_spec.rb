@@ -27,7 +27,7 @@ RSpec.describe 'Billing lifecycle', type: :request do
     # Subscribe to the starter plan
     post subs_engine.subscriptions_path(plan_id: starter_plan.id)
     subscription = SubsEngine::Subscription.last
-    expect(subscription.current_state).to eq('active')
+    expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::ACTIVE)
 
     # Simulate a payment_succeeded webhook creating an invoice
     payment_payload = {

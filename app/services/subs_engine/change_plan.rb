@@ -2,43 +2,49 @@
 
 module SubsEngine
   class ChangePlan
-    include Dry::Monads[:result, :do]
+    extend Dry::Initializer
+    include Dry::Monads[:result]
 
-    def call(subscription:, new_plan:, gateway: StripeGateway.new)
-      yield validate_different_plan(subscription, new_plan)
-      yield validate_plan_active(new_plan)
-      yield validate_subscription_active(subscription)
-      yield update_on_stripe(subscription, new_plan, gateway)
-      persist_plan_change(subscription, new_plan)
+    option :gateway, default: -> { StripeGateway.new }
+
+    def call(subscription:, new_plan:)
+      @subscription = subscription
+      @new_plan = new_plan
+
+      validate_different_plan
+        .bind { validate_plan_active }
+        .bind { validate_subscription_active }
+        .bind { update_on_stripe }
+        .bind { persist_plan_change }
     end
 
     private
 
-    def validate_different_plan(subscription, new_plan)
-      return Failure[:same_plan, subscription] if subscription.plan_id == new_plan.id
+    def validate_different_plan
+      return Failure[:same_plan, @subscription] if @subscription.plan_id == @new_plan.id
 
-      Success(subscription)
+      Success(@subscription)
     end
 
-    def validate_plan_active(plan)
-      plan.active? ? Success(plan) : Failure[:plan_inactive, plan]
+    def validate_plan_active
+      @new_plan.active? ? Success(@new_plan) : Failure[:plan_inactive, @new_plan]
     end
 
-    def validate_subscription_active(subscription)
-      return Success(subscription) if subscription.current_state == 'active'
+    def validate_subscription_active
+      return Success(@subscription) if @subscription.current_state == SubscriptionStateMachine::ACTIVE
 
-      Failure[:subscription_not_active, subscription]
+      Failure[:subscription_not_active, @subscription]
     end
 
-    def update_on_stripe(subscription, new_plan, gateway)
+    def update_on_stripe
       gateway.update_subscription(
-        stripe_subscription_id: subscription.stripe_subscription_id,
-        new_price_id: new_plan.stripe_price_id
+        stripe_subscription_id: @subscription.stripe_subscription_id,
+        new_price_id: @new_plan.stripe_price_id
       )
     end
 
-    def persist_plan_change(subscription, new_plan)
-      subscription.update(plan: new_plan) ? Success(subscription) : Failure[:persistence_failed, subscription]
+    def persist_plan_change
+      @subscription.update(plan: @new_plan) ? Success(@subscription) : Failure[:persistence_failed, @subscription]
     end
   end
 end

@@ -19,7 +19,7 @@ FactoryBot.define do
 
   factory :subscription_transition, class: 'SubsEngine::SubscriptionTransition' do
     association :subscription
-    to_state { 'active' }
+    to_state { SubsEngine::SubscriptionStateMachine::ACTIVE }
     sort_key { 1 }
     most_recent { true }
   end

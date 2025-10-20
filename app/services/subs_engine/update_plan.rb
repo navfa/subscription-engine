@@ -2,21 +2,19 @@
 
 module SubsEngine
   class UpdatePlan
-    include Dry::Monads[:result, :do]
+    include Dry::Monads[:result]
 
     def call(plan, params)
-      yield apply_changes(plan, params)
-      Success(plan)
+      @plan = plan
+      @params = params
+
+      apply_changes
     end
 
     private
 
-    def apply_changes(plan, params)
-      if plan.update(params)
-        Success(plan)
-      else
-        Failure[:validation_failed, plan]
-      end
+    def apply_changes
+      @plan.update(@params) ? Success(@plan) : Failure[:validation_failed, @plan]
     end
   end
 end

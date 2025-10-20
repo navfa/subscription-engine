@@ -51,7 +51,7 @@ RSpec.describe SubsEngine::AggregateUsage do
 
     it 'returns failure' do
       expect(result).to be_failure
-      expect(result.failure).to eq([:unknown_metric, 'nonexistent'])
+      expect(result.failure).to eq(:unknown_metric)
     end
   end
 end

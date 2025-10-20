@@ -3,12 +3,17 @@
 require 'rails_helper'
 
 RSpec.describe SubsEngine::SubscribeCustomer do
-  subject(:result) { described_class.new.call(customer: customer, plan: plan, gateway: gateway) }
+  subject(:result) { described_class.new(gateway: gateway).call(customer: customer, plan: plan) }
 
   let(:customer) { create(:customer, :with_stripe) }
   let(:plan) { create(:plan, :with_stripe) }
   let(:gateway) { instance_double(SubsEngine::StripeGateway) }
-  let(:stripe_sub) { Struct.new(:id, :status).new('sub_test123', 'active') }
+  let(:stripe_sub) do
+    Struct.new(:id, :status, :items).new(
+      'sub_test123', 'active',
+      Struct.new(:data).new([Struct.new(:id).new('si_test123')])
+    )
+  end
 
   before do
     allow(gateway).to receive(:create_subscription).and_return(Dry::Monads::Success(stripe_sub))
@@ -23,7 +28,7 @@ RSpec.describe SubsEngine::SubscribeCustomer do
     it 'creates a subscription in active state' do
       subscription = result.value!
 
-      expect(subscription.current_state).to eq('active')
+      expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::ACTIVE)
       expect(subscription.stripe_subscription_id).to eq('sub_test123')
     end
 

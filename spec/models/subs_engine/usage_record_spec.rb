@@ -4,18 +4,18 @@ require 'rails_helper'
 
 RSpec.describe SubsEngine::UsageRecord do
   describe 'validations' do
-    subject { build(:usage_record) }
+    subject(:usage_record) { build(:usage_record) }
 
     it { is_expected.to be_valid }
 
     it 'requires a quantity greater than 0' do
-      subject.quantity = 0
-      expect(subject).not_to be_valid
+      usage_record.quantity = 0
+      expect(usage_record).not_to be_valid
     end
 
     it 'requires recorded_at' do
-      subject.recorded_at = nil
-      expect(subject).not_to be_valid
+      usage_record.recorded_at = nil
+      expect(usage_record).not_to be_valid
     end
   end
 

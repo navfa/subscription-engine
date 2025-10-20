@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe SubsEngine::CancelSubscription do
-  subject(:result) { described_class.new.call(subscription, gateway: gateway) }
+  subject(:result) { described_class.new(gateway: gateway).call(subscription) }
 
   let(:gateway) { instance_double(SubsEngine::StripeGateway) }
   let(:canceled_sub) { Struct.new(:id, :status).new('sub_test1', 'canceled') }
@@ -19,7 +19,7 @@ RSpec.describe SubsEngine::CancelSubscription do
 
     it 'returns Success with the canceled subscription' do
       expect(result).to be_success
-      expect(result.value!.current_state).to eq('canceled')
+      expect(result.value!.current_state).to eq(SubsEngine::SubscriptionStateMachine::CANCELED)
     end
 
     it 'sets canceled_at' do
@@ -40,7 +40,7 @@ RSpec.describe SubsEngine::CancelSubscription do
 
     it 'cancels from trialing state' do
       expect(result).to be_success
-      expect(result.value!.current_state).to eq('canceled')
+      expect(result.value!.current_state).to eq(SubsEngine::SubscriptionStateMachine::CANCELED)
     end
   end
 
@@ -74,7 +74,7 @@ RSpec.describe SubsEngine::CancelSubscription do
 
     it 'does not transition the subscription' do
       result
-      expect(subscription.current_state).to eq('active')
+      expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::ACTIVE)
     end
   end
 

@@ -15,7 +15,7 @@ RSpec.describe SubsEngine::Handlers::SubscriptionDeleted do
 
   it 'transitions to canceled' do
     expect(result).to be_success
-    expect(subscription.current_state).to eq('canceled')
+    expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::CANCELED)
   end
 
   it 'sets canceled_at' do

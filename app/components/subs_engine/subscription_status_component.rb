@@ -3,19 +3,19 @@
 module SubsEngine
   class SubscriptionStatusComponent < ViewComponent::Base
     STATE_STYLES = {
-      'trialing' => 'subs-badge subs-badge--trialing',
-      'active' => 'subs-badge subs-badge--active',
-      'past_due' => 'subs-badge subs-badge--past-due',
-      'canceled' => 'subs-badge subs-badge--canceled',
-      'expired' => 'subs-badge subs-badge--expired'
+      SubscriptionStateMachine::TRIALING => 'subs-badge subs-badge--trialing',
+      SubscriptionStateMachine::ACTIVE => 'subs-badge subs-badge--active',
+      SubscriptionStateMachine::PAST_DUE => 'subs-badge subs-badge--past-due',
+      SubscriptionStateMachine::CANCELED => 'subs-badge subs-badge--canceled',
+      SubscriptionStateMachine::EXPIRED => 'subs-badge subs-badge--expired'
     }.freeze
 
     STATE_LABELS = {
-      'trialing' => 'Trialing',
-      'active' => 'Active',
-      'past_due' => 'Past Due',
-      'canceled' => 'Canceled',
-      'expired' => 'Expired'
+      SubscriptionStateMachine::TRIALING => 'Trialing',
+      SubscriptionStateMachine::ACTIVE => 'Active',
+      SubscriptionStateMachine::PAST_DUE => 'Past Due',
+      SubscriptionStateMachine::CANCELED => 'Canceled',
+      SubscriptionStateMachine::EXPIRED => 'Expired'
     }.freeze
 
     attr_reader :subscription

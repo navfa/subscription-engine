@@ -4,6 +4,12 @@ module SubsEngine
   class SubscriptionStateMachine
     include Statesman::Machine
 
+    TRIALING = 'trialing'
+    ACTIVE = 'active'
+    PAST_DUE = 'past_due'
+    CANCELED = 'canceled'
+    EXPIRED = 'expired'
+
     state :trialing, initial: true
     state :active
     state :past_due

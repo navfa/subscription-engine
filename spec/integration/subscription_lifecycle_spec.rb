@@ -6,7 +6,12 @@ RSpec.describe 'Subscription lifecycle', type: :request do
   let(:user) { Struct.new(:id, :subs_engine_admin?).new(42, false) }
   let(:customer) { create(:customer, :with_stripe, external_id: '42') }
   let(:plan) { create(:plan, :with_stripe) }
-  let(:stripe_sub) { Struct.new(:id, :status).new('sub_lifecycle', 'active') }
+  let(:stripe_sub) do
+    Struct.new(:id, :status, :items).new(
+      'sub_lifecycle', 'active',
+      Struct.new(:data).new([Struct.new(:id).new('si_lifecycle')])
+    )
+  end
   let(:canceled_sub) { Struct.new(:id, :status).new('sub_lifecycle', 'canceled') }
 
   before do
@@ -20,7 +25,7 @@ RSpec.describe 'Subscription lifecycle', type: :request do
     post subs_engine.subscriptions_path(plan_id: plan.id)
 
     subscription = SubsEngine::Subscription.last
-    expect(subscription.current_state).to eq('active')
+    expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::ACTIVE)
     expect(subscription.stripe_subscription_id).to eq('sub_lifecycle')
     expect(response).to redirect_to(subs_engine.subscription_path(subscription))
   end
@@ -32,7 +37,7 @@ RSpec.describe 'Subscription lifecycle', type: :request do
     delete subs_engine.subscription_path(subscription)
 
     subscription.reload
-    expect(subscription.current_state).to eq('canceled')
+    expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::CANCELED)
     expect(subscription.canceled_at).to be_present
     expect(response).to redirect_to(subs_engine.subscription_path(subscription))
   end

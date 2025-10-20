@@ -2,32 +2,41 @@
 
 module SubsEngine
   class RecordUsage
-    include Dry::Monads[:result, :do]
+    extend Dry::Initializer
+    include Dry::Monads[:result]
+
+    option :usage_metric_repository, default: -> { UsageMetricRepository.new }
 
     def call(customer:, metric_code:, quantity:, recorded_at: Time.current, metadata: {})
-      metric = yield find_metric(metric_code)
-      yield validate_quantity(quantity)
-      persist_record(customer, metric, quantity, recorded_at, metadata)
+      @customer = customer
+      @quantity = quantity
+      @recorded_at = recorded_at
+      @metadata = metadata
+
+      validate_quantity.bind do
+        find_metric(metric_code).bind do |metric|
+          persist_record(metric)
+        end
+      end
     end
 
     private
 
+    def validate_quantity
+      @quantity.positive? ? Success(@quantity) : Failure[:invalid_quantity, @quantity]
+    end
+
     def find_metric(code)
-      metric = UsageMetric.active.find_by(code: code)
-      metric ? Success(metric) : Failure[:unknown_metric, code]
+      usage_metric_repository.find_active_by_code(code).to_result(:unknown_metric)
     end
 
-    def validate_quantity(quantity)
-      quantity.positive? ? Success(quantity) : Failure[:invalid_quantity, quantity]
-    end
-
-    def persist_record(customer, metric, quantity, recorded_at, metadata)
+    def persist_record(metric)
       record = UsageRecord.create(
-        customer: customer,
+        customer: @customer,
         usage_metric: metric,
-        quantity: quantity,
-        recorded_at: recorded_at,
-        metadata: metadata
+        quantity: @quantity,
+        recorded_at: @recorded_at,
+        metadata: @metadata
       )
       record.persisted? ? Success(record) : Failure[:persistence_failed, record.errors.full_messages]
     end

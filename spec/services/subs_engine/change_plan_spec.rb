@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe SubsEngine::ChangePlan do
-  subject(:result) { described_class.new.call(subscription: subscription, new_plan: new_plan, gateway: gateway) }
+  subject(:result) { described_class.new(gateway: gateway).call(subscription: subscription, new_plan: new_plan) }
 
   let(:customer) { create(:customer, :with_stripe) }
   let(:current_plan) { create(:plan, :with_stripe, name: 'Starter') }

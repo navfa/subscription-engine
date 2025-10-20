@@ -39,7 +39,7 @@ RSpec.describe 'Webhook lifecycle', type: :request do
     perform_enqueued_jobs
 
     subscription.reload
-    expect(subscription.current_state).to eq('past_due')
+    expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::PAST_DUE)
     expect(SubsEngine::WebhookEvent.last).to be_processed
   end
 
@@ -55,7 +55,7 @@ RSpec.describe 'Webhook lifecycle', type: :request do
     perform_enqueued_jobs
 
     subscription.reload
-    expect(subscription.current_state).to eq('canceled')
+    expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::CANCELED)
     expect(subscription.canceled_at).to be_present
   end
 

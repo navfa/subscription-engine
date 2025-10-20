@@ -2,22 +2,18 @@
 
 module SubsEngine
   class CreatePlan
-    include Dry::Monads[:result, :do]
+    include Dry::Monads[:result]
 
     def call(params)
-      plan = Plan.new(params)
-      yield persist(plan)
-      Success(plan)
+      @plan = Plan.new(params)
+
+      persist
     end
 
     private
 
-    def persist(plan)
-      if plan.save
-        Success(plan)
-      else
-        Failure[:validation_failed, plan]
-      end
+    def persist
+      @plan.save ? Success(@plan) : Failure[:validation_failed, @plan]
     end
   end
 end

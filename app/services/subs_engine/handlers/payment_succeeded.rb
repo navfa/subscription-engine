@@ -3,47 +3,57 @@
 module SubsEngine
   module Handlers
     class PaymentSucceeded
-      include Dry::Monads[:result, :do]
+      extend Dry::Initializer
+      include Dry::Monads[:result]
+
+      option :subscription_repository, default: -> { SubscriptionRepository.new }
+      option :invoice_repository, default: -> { InvoiceRepository.new }
 
       def call(payload)
-        object = (payload['object'] || payload[:object]).deep_stringify_keys
-        stripe_sub_id = object['subscription']
-        return Success(:no_subscription) unless stripe_sub_id
-        return Success(:already_synced) if invoice_exists?(object['id'])
+        @object = (payload['object'] || payload[:object]).deep_stringify_keys
 
-        subscription = yield find_subscription(stripe_sub_id)
-        persist_invoice(subscription, object)
+        return Success(:no_subscription) unless @object['subscription']
+        return Success(:already_synced) if invoice_exists?
+
+        find_subscription.bind do
+          persist_invoice
+        end
       end
 
       private
 
-      def invoice_exists?(stripe_invoice_id)
-        invoice_repository.find_by_stripe_id(stripe_invoice_id).some?
+      def invoice_exists?
+        invoice_repository.find_by_stripe_id(@object['id']).some?
       end
 
-      def find_subscription(stripe_sub_id)
-        subscription_repository.find_by_stripe_id(stripe_sub_id)
+      def find_subscription
+        subscription_repository.find_by_stripe_id(@object['subscription'])
                                .to_result(:subscription_not_found)
+                               .bind do |sub|
+          @subscription = sub
+          Success(sub)
+        end
       end
 
-      def persist_invoice(subscription, object)
+      def persist_invoice
         invoice = Invoice.create!(
-          customer: subscription.customer,
-          subscription: subscription,
-          stripe_invoice_id: object['id'],
+          customer: @subscription.customer,
+          subscription: @subscription,
+          stripe_invoice_id: @object['id'],
           status: :paid,
-          amount_cents: object['amount_paid'] || 0,
-          currency: object['currency'] || 'usd',
-          period_start: parse_timestamp(object['period_start']),
-          period_end: parse_timestamp(object['period_end']),
-          paid_at: parse_timestamp(object.dig('status_transitions', 'paid_at'))
+          amount_cents: @object['amount_paid'] || 0,
+          currency: @object['currency'] || 'usd',
+          period_start: parse_timestamp(@object['period_start']),
+          period_end: parse_timestamp(@object['period_end']),
+          paid_at: parse_timestamp(@object.dig('status_transitions', 'paid_at'))
         )
 
-        persist_line_items(invoice, object['lines'])
+        persist_line_items(invoice)
         Success(invoice)
       end
 
-      def persist_line_items(invoice, lines)
+      def persist_line_items(invoice)
+        lines = @object['lines']
         return unless lines.is_a?(Hash)
 
         (lines['data'] || []).each { |line| create_line_item(invoice, line) }
@@ -65,14 +75,6 @@ module SubsEngine
 
       def parse_timestamp(value)
         value ? Time.zone.at(value) : nil
-      end
-
-      def subscription_repository
-        @subscription_repository ||= SubscriptionRepository.new
-      end
-
-      def invoice_repository
-        @invoice_repository ||= InvoiceRepository.new
       end
     end
   end

@@ -5,33 +5,34 @@ module SubsEngine
     include Dry::Monads[:result]
 
     def call(invoice)
-      pdf = build_pdf(invoice)
-      Success(pdf.render)
+      @invoice = invoice
+
+      Success(build_pdf.render)
     end
 
     private
 
-    def build_pdf(invoice)
+    def build_pdf
       Prawn::Document.new(page_size: 'A4') do |pdf|
-        render_header(pdf, invoice)
-        render_line_items(pdf, invoice)
-        render_totals(pdf, invoice)
+        render_header(pdf)
+        render_line_items(pdf)
+        render_totals(pdf)
         render_footer(pdf)
       end
     end
 
-    def render_header(pdf, invoice)
+    def render_header(pdf)
       pdf.text 'INVOICE', size: 24, style: :bold
       pdf.move_down 10
-      pdf.text "Invoice ##{invoice.stripe_invoice_id}"
-      pdf.text "Date: #{invoice.created_at.to_date}"
-      pdf.text "Status: #{invoice.status.upcase}"
+      pdf.text "Invoice ##{@invoice.stripe_invoice_id}"
+      pdf.text "Date: #{@invoice.created_at.to_date}"
+      pdf.text "Status: #{@invoice.status.upcase}"
       pdf.move_down 20
     end
 
-    def render_line_items(pdf, invoice)
+    def render_line_items(pdf)
       data = [%w[Description Qty Amount]]
-      invoice.line_items.each do |item|
+      @invoice.line_items.each do |item|
         data << [item.description, item.quantity.to_s, format_amount(item.amount_cents, item.currency)]
       end
 
@@ -41,9 +42,9 @@ module SubsEngine
       end
     end
 
-    def render_totals(pdf, invoice)
+    def render_totals(pdf)
       pdf.move_down 10
-      pdf.text "Total: #{format_amount(invoice.amount_cents, invoice.currency)}",
+      pdf.text "Total: #{format_amount(@invoice.amount_cents, @invoice.currency)}",
                size: 14, style: :bold, align: :right
     end
 

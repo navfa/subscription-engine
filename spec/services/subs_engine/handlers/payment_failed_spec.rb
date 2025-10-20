@@ -17,7 +17,7 @@ RSpec.describe SubsEngine::Handlers::PaymentFailed do
 
     it 'transitions to past_due' do
       expect(result).to be_success
-      expect(subscription.current_state).to eq('past_due')
+      expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::PAST_DUE)
     end
   end
 

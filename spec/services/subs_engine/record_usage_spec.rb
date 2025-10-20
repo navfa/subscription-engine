@@ -25,18 +25,18 @@ RSpec.describe SubsEngine::RecordUsage do
 
     it 'returns failure with unknown_metric' do
       expect(result).to be_failure
-      expect(result.failure).to eq([:unknown_metric, 'nonexistent'])
+      expect(result.failure).to eq(:unknown_metric)
     end
   end
 
   context 'when metric is inactive' do
-    let(:metric) { create(:usage_metric, :inactive, code: 'deprecated') }
-
     subject(:result) { described_class.new.call(customer: customer, metric_code: 'deprecated', quantity: 5) }
+
+    let(:metric) { create(:usage_metric, :inactive, code: 'deprecated') }
 
     it 'returns failure with unknown_metric' do
       expect(result).to be_failure
-      expect(result.failure.first).to eq(:unknown_metric)
+      expect(result.failure).to eq(:unknown_metric)
     end
   end
 

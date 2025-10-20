@@ -17,17 +17,17 @@ RSpec.describe SubsEngine::Subscription do
 
   describe 'state machine' do
     it 'starts in trialing state' do
-      expect(subscription.current_state).to eq('trialing')
+      expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::TRIALING)
     end
 
     it 'transitions from trialing to active' do
       expect(subscription.transition_to(:active)).to be true
-      expect(subscription.current_state).to eq('active')
+      expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::ACTIVE)
     end
 
     it 'transitions from trialing to canceled' do
       expect(subscription.transition_to(:canceled)).to be true
-      expect(subscription.current_state).to eq('canceled')
+      expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::CANCELED)
     end
 
     it 'transitions from active to past_due' do
@@ -54,7 +54,7 @@ RSpec.describe SubsEngine::Subscription do
       subscription.transition_to(:active)
 
       expect(subscription.transitions.count).to eq(1)
-      expect(subscription.transitions.last.to_state).to eq('active')
+      expect(subscription.transitions.last.to_state).to eq(SubsEngine::SubscriptionStateMachine::ACTIVE)
     end
   end
 end
