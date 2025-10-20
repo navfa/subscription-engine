@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'dry/initializer'
 require 'dry/monads'
 require 'pundit'
 require 'statesman'

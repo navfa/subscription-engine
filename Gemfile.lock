@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     subs_engine (0.1.0)
+      dry-initializer (~> 3.1)
       dry-monads (~> 1.6)
       prawn (~> 2.5)
       prawn-table (~> 0.2)
@@ -114,6 +115,7 @@ GEM
       concurrent-ruby (~> 1.0)
       logger
       zeitwerk (~> 2.6)
+    dry-initializer (3.2.0)
     dry-monads (1.9.0)
       concurrent-ruby (~> 1.0)
       dry-core (~> 1.1)
