@@ -15,5 +15,11 @@ module SubsEngine
     def find_by_stripe_id(stripe_subscription_id)
       Maybe(Subscription.find_by(stripe_subscription_id: stripe_subscription_id))
     end
+
+    def find_active_metered
+      Subscription.in_state(:active)
+                  .where.not(stripe_subscription_item_id: nil)
+                  .includes(:customer)
+    end
   end
 end
