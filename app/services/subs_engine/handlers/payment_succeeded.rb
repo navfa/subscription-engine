@@ -70,7 +70,16 @@ module SubsEngine
       end
 
       def detect_line_type(line)
-        line['type'] == 'invoiceitem' && line['proration'] ? :proration : :subscription
+        return :proration if line['type'] == 'invoiceitem' && line['proration']
+        return :usage if metered_line?(line)
+
+        :subscription
+      end
+
+      def metered_line?(line)
+        price = line['price'] || {}
+        recurring = price['recurring'] || {}
+        recurring['usage_type'] == 'metered'
       end
 
       def parse_timestamp(value)

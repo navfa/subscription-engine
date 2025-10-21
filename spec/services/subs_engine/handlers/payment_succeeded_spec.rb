@@ -63,6 +63,40 @@ RSpec.describe SubsEngine::Handlers::PaymentSucceeded do
     end
   end
 
+  context 'with metered usage line items' do
+    let(:payload) do
+      {
+        'object' => {
+          'id' => 'in_metered_1',
+          'subscription' => subscription.stripe_subscription_id,
+          'amount_paid' => 450,
+          'currency' => 'usd',
+          'period_start' => 1_696_118_400,
+          'period_end' => 1_698_796_800,
+          'lines' => {
+            'data' => [
+              {
+                'description' => 'API Calls (100 calls)',
+                'amount' => 450,
+                'currency' => 'usd',
+                'quantity' => 100,
+                'price' => { 'recurring' => { 'usage_type' => 'metered' } }
+              }
+            ]
+          }
+        }
+      }
+    end
+
+    it 'creates a usage-type line item' do
+      result
+      line_item = SubsEngine::InvoiceLineItem.last
+
+      expect(line_item).to be_usage
+      expect(line_item.quantity).to eq(100)
+    end
+  end
+
   context 'without subscription reference' do
     let(:payload) { { 'object' => { 'id' => 'in_no_sub' } } }
 
