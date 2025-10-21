@@ -11,7 +11,6 @@ module SubsEngine
 
     def call(subscription)
       @subscription = subscription
-      @synced = []
 
       sync_active_metrics
     end
@@ -19,20 +18,22 @@ module SubsEngine
     private
 
     def sync_active_metrics
-      usage_metric_repository.find_active.each do |metric|
-        sync_metric(metric)
+      results = usage_metric_repository.find_active.filter_map do |metric|
+        aggregate_and_report(metric)
       end
 
-      Success(@synced)
+      Success(results)
     end
 
-    def sync_metric(metric)
+    def aggregate_and_report(metric)
       total = usage_repository.sum_by_metric(
         @subscription.customer, metric,
         @subscription.current_period_start, @subscription.current_period_end
       )
 
-      report_to_stripe(metric, total) if total.positive?
+      return unless total.positive?
+
+      report_to_stripe(metric, total).value_or(nil)
     end
 
     def report_to_stripe(metric, total)
@@ -40,10 +41,7 @@ module SubsEngine
         subscription_item_id: @subscription.stripe_subscription_item_id,
         quantity: total,
         timestamp: @subscription.current_period_start.to_i
-      ).bind do
-        @synced << { metric: metric.code, quantity: total }
-        Success(total)
-      end
+      ).fmap { { metric: metric.code, quantity: total } }
     end
   end
 end

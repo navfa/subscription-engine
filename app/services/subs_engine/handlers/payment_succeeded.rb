@@ -15,8 +15,8 @@ module SubsEngine
         return Success(:no_subscription) unless @object['subscription']
         return Success(:already_synced) if invoice_exists?
 
-        find_subscription.bind do
-          persist_invoice
+        find_subscription.bind do |subscription|
+          persist_invoice(subscription)
         end
       end
 
@@ -29,16 +29,12 @@ module SubsEngine
       def find_subscription
         subscription_repository.find_by_stripe_id(@object['subscription'])
                                .to_result(:subscription_not_found)
-                               .bind do |sub|
-          @subscription = sub
-          Success(sub)
-        end
       end
 
-      def persist_invoice
+      def persist_invoice(subscription)
         invoice = Invoice.create!(
-          customer: @subscription.customer,
-          subscription: @subscription,
+          customer: subscription.customer,
+          subscription: subscription,
           stripe_invoice_id: @object['id'],
           status: :paid,
           amount_cents: @object['amount_paid'] || 0,

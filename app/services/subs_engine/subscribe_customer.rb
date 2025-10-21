@@ -17,7 +17,7 @@ module SubsEngine
         .bind { ensure_stripe_customer }
         .bind { create_on_stripe }
         .bind { |stripe_sub| persist_subscription(stripe_sub) }
-        .bind { activate }
+        .bind { |subscription| activate(subscription) }
     end
 
     private
@@ -46,7 +46,6 @@ module SubsEngine
     end
 
     def persist_subscription(stripe_sub)
-      @stripe_sub = stripe_sub
       subscription = Subscription.new(
         customer: @customer,
         plan: @plan,
@@ -56,17 +55,12 @@ module SubsEngine
         current_period_end: 1.month.from_now
       )
 
-      if subscription.save
-        @subscription = subscription
-        Success(subscription)
-      else
-        Failure[:persistence_failed, subscription]
-      end
+      subscription.save ? Success(subscription) : Failure[:persistence_failed, subscription]
     end
 
-    def activate
-      @subscription.transition_to(:active, stripe_subscription_id: @stripe_sub.id)
-      Success(@subscription)
+    def activate(subscription)
+      subscription.transition_to(:active, stripe_subscription_id: subscription.stripe_subscription_id)
+      Success(subscription)
     end
   end
 end
