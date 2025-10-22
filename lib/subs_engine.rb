@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require 'chartkick'
 require 'dry/initializer'
 require 'dry/monads'
+require 'groupdate'
 require 'pundit'
 require 'statesman'
 require 'stripe'
