@@ -26,6 +26,14 @@ module SubsEngine
       Subscription.in_state(:active)
     end
 
+    def find_all_with_details
+      Subscription.includes(:customer, :plan).order(created_at: :desc)
+    end
+
+    def find_by_state(state)
+      Subscription.in_state(state.to_sym).includes(:customer, :plan).order(created_at: :desc)
+    end
+
     def count_active_at(timestamp)
       Subscription.where(created_at: ..timestamp)
                   .where('canceled_at IS NULL OR canceled_at > ?', timestamp)
