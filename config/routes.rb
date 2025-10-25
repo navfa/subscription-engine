@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 SubsEngine::Engine.routes.draw do
+  get 'dashboard', to: 'dashboard#index', as: :dashboard
+  resources :customers, only: [:show]
+
   resources :plans, except: [:destroy] do
     member do
       patch :deactivate
