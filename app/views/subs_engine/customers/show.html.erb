@@ -1,0 +1,9 @@
+<div class="subs-engine-dashboard">
+  <%= link_to '← Back to Dashboard', subs_engine.dashboard_path, class: 'subs-engine-back-link' %>
+
+  <%= render CustomerDetailComponent.new(
+    customer: @customer,
+    subscriptions: @subscriptions,
+    invoices: @invoices
+  ) %>
+</div>

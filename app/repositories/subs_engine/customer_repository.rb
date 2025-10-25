@@ -4,6 +4,10 @@ module SubsEngine
   class CustomerRepository
     include Dry::Monads[:maybe]
 
+    def find_by_id(id)
+      Maybe(Customer.find_by(id: id))
+    end
+
     def find_by_external_id(external_id)
       Maybe(Customer.find_by(external_id: external_id))
     end

@@ -1,0 +1,65 @@
+<div class="subs-engine-customer-detail">
+  <h2><%= customer.email %></h2>
+
+  <section class="subs-engine-customer-detail__subscriptions">
+    <h3>Subscriptions</h3>
+    <% if subscriptions.any? %>
+      <table class="subs-engine-table">
+        <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Status</th>
+            <th>Started</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% subscriptions.each do |subscription| %>
+            <tr>
+              <td><%= subscription.plan.name %></td>
+              <td><%= render SubscriptionStatusComponent.new(subscription: subscription) %></td>
+              <td><%= subscription.created_at.to_date %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p>No active subscriptions</p>
+    <% end %>
+  </section>
+
+  <%= turbo_frame_tag "customer_invoices" do %>
+    <section class="subs-engine-customer-detail__invoices">
+      <h3>Invoices</h3>
+      <% if invoices.any? %>
+        <table class="subs-engine-table">
+          <thead>
+            <tr>
+              <th>Invoice</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% invoices.each do |invoice| %>
+              <tr>
+                <td><%= invoice.stripe_invoice_id %></td>
+                <td><%= number_to_currency(invoice.amount_cents / 100.0) %></td>
+                <td><span class="subs-badge subs-badge--<%= invoice.status %>"><%= invoice.status.humanize %></span></td>
+                <td><%= invoice.created_at.to_date %></td>
+                <td>
+                  <% if invoice.paid? %>
+                    <%= link_to 'PDF', subs_engine.invoice_path(invoice, format: :pdf) %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p>No invoices</p>
+      <% end %>
+    </section>
+  <% end %>
+</div>
