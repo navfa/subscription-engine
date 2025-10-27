@@ -7,8 +7,13 @@ module SubsEngine
       initial_state: :trialing
     ]
 
+    include Turbo::Broadcastable
+
     belongs_to :customer
     belongs_to :plan
+
+    after_create_commit -> { broadcast_prepend_to('subs_engine_subscriptions') }
+    after_update_commit -> { broadcast_replace_to('subs_engine_subscriptions') }
     has_many :transitions, class_name: 'SubsEngine::SubscriptionTransition',
                            dependent: :destroy,
                            autosave: false

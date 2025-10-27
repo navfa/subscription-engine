@@ -1,0 +1,6 @@
+<tr id="<%= dom_id(subscription) %>">
+  <td><%= link_to subscription.customer.email, subs_engine.customer_path(subscription.customer), data: { turbo_frame: "_top" } %></td>
+  <td><%= subscription.plan.name %></td>
+  <td><%= render SubsEngine::SubscriptionStatusComponent.new(subscription: subscription) %></td>
+  <td><%= subscription.created_at.to_date %></td>
+</tr>
