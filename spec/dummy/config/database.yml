@@ -10,3 +10,4 @@ development:
 test:
   <<: *default
   database: subs_engine_test
+  url: <%= ENV['DATABASE_URL'] %>
