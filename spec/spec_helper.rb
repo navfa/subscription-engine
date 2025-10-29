@@ -1,5 +1,22 @@
 # frozen_string_literal: true
 
+require 'simplecov'
+SimpleCov.start 'rails' do
+  add_filter '/spec/'
+  add_filter '/config/'
+  add_filter '/lib/subs_engine/version'
+
+  add_group 'Services', 'app/services'
+  add_group 'Repositories', 'app/repositories'
+  add_group 'Models', 'app/models'
+  add_group 'Controllers', 'app/controllers'
+  add_group 'Components', 'app/components'
+  add_group 'State Machines', 'app/state_machines'
+  add_group 'Jobs', 'app/jobs'
+
+  minimum_coverage 85
+end
+
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
