@@ -1,4 +1,4 @@
-.PHONY: setup db.create db.migrate db.rollback db.reset test lint lint.fix console clean
+.PHONY: setup db.create db.migrate db.rollback db.reset db.seed erase test lint lint.fix console clean
 
 ## — Setup ——————————————————————————————————————————————
 
@@ -19,6 +19,13 @@ db.rollback: ## Rollback the last migration
 
 db.reset: ## Drop, create and migrate the database
 	bundle exec rake db:drop db:create db:migrate
+
+db.seed: ## Load demo data (plans, customers, subscriptions, invoices, usage)
+	bundle exec rake db:seed
+
+erase: ## Drop everything and start fresh
+	bundle exec rake db:drop db:create db:migrate
+	@echo "✨ Clean slate — run 'make db.seed' to reload demo data"
 
 ## — Quality —————————————————————————————————————————————
 
