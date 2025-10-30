@@ -16,7 +16,7 @@
           <% subscriptions.each do |subscription| %>
             <tr>
               <td><%= subscription.plan.name %></td>
-              <td><%= render SubscriptionStatusComponent.new(subscription: subscription) %></td>
+              <td><%= render SubsEngine::SubscriptionStatusComponent.new(subscription: subscription) %></td>
               <td><%= subscription.created_at.to_date %></td>
             </tr>
           <% end %>
@@ -50,7 +50,7 @@
                 <td><%= invoice.created_at.to_date %></td>
                 <td>
                   <% if invoice.paid? %>
-                    <%= link_to 'PDF', subs_engine.invoice_path(invoice, format: :pdf) %>
+                    <%= link_to 'PDF', helpers.subs_engine.invoice_path(invoice, format: :pdf) %>
                   <% end %>
                 </td>
               </tr>

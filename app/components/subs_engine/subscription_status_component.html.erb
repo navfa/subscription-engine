@@ -9,7 +9,7 @@
 
   <% if cancelable? %>
     <%= button_to "Cancel Subscription",
-        helpers.subscription_path(subscription),
+        helpers.subs_engine.subscription_path(subscription),
         method: :delete,
         class: "subs-btn subs-btn--danger",
         data: { turbo_confirm: "Are you sure you want to cancel?" } %>

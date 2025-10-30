@@ -1,12 +1,12 @@
 <%= turbo_frame_tag "subscriptions_list" do %>
   <div class="subs-engine-filters">
     <%= link_to 'All',
-        subs_engine.dashboard_path,
+        helpers.subs_engine.dashboard_path,
         class: "subs-engine-filter#{' subs-engine-filter--active' unless current_status}",
         data: { turbo_frame: "subscriptions_list" } %>
     <% filter_states.each do |state| %>
       <%= link_to state.humanize,
-          subs_engine.dashboard_path(status: state),
+          helpers.subs_engine.dashboard_path(status: state),
           class: "subs-engine-filter#{' subs-engine-filter--active' if current_status == state}",
           data: { turbo_frame: "subscriptions_list" } %>
     <% end %>
@@ -24,9 +24,9 @@
     <tbody>
       <% subscriptions.each do |subscription| %>
         <tr>
-          <td><%= link_to subscription.customer.email, subs_engine.customer_path(subscription.customer), data: { turbo_frame: "_top" } %></td>
+          <td><%= link_to subscription.customer.email, helpers.subs_engine.customer_path(subscription.customer), data: { turbo_frame: "_top" } %></td>
           <td><%= subscription.plan.name %></td>
-          <td><%= render SubscriptionStatusComponent.new(subscription: subscription) %></td>
+          <td><%= render SubsEngine::SubscriptionStatusComponent.new(subscription: subscription) %></td>
           <td><%= subscription.created_at.to_date %></td>
         </tr>
       <% end %>
@@ -42,13 +42,13 @@
     <div class="subs-engine-pagination">
       <% if prev_page? %>
         <%= link_to '← Previous',
-            subs_engine.dashboard_path(status: current_status, page: page - 1),
+            helpers.subs_engine.dashboard_path(status: current_status, page: page - 1),
             data: { turbo_frame: "subscriptions_list" } %>
       <% end %>
       <span class="subs-engine-pagination__info">Page <%= page %> of <%= total_pages %></span>
       <% if next_page? %>
         <%= link_to 'Next →',
-            subs_engine.dashboard_path(status: current_status, page: page + 1),
+            helpers.subs_engine.dashboard_path(status: current_status, page: page + 1),
             data: { turbo_frame: "subscriptions_list" } %>
       <% end %>
     </div>

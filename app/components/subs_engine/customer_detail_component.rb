@@ -2,6 +2,8 @@
 
 module SubsEngine
   class CustomerDetailComponent < ViewComponent::Base
+    include Turbo::FramesHelper
+
     attr_reader :customer, :subscriptions, :invoices
 
     def initialize(customer:, subscriptions:, invoices:)

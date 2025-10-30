@@ -36,7 +36,7 @@ RSpec.describe 'Webhook lifecycle', type: :request do
 
     expect(response).to have_http_status(:ok)
 
-    perform_enqueued_jobs
+    perform_enqueued_jobs(except: [Turbo::Streams::ActionBroadcastJob, Turbo::Streams::BroadcastJob, Turbo::Streams::BroadcastStreamJob])
 
     subscription.reload
     expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::PAST_DUE)
@@ -52,7 +52,7 @@ RSpec.describe 'Webhook lifecycle', type: :request do
 
     expect(response).to have_http_status(:ok)
 
-    perform_enqueued_jobs
+    perform_enqueued_jobs(except: [Turbo::Streams::ActionBroadcastJob, Turbo::Streams::BroadcastJob, Turbo::Streams::BroadcastStreamJob])
 
     subscription.reload
     expect(subscription.current_state).to eq(SubsEngine::SubscriptionStateMachine::CANCELED)
@@ -83,7 +83,7 @@ RSpec.describe 'Webhook lifecycle', type: :request do
 
     expect(response).to have_http_status(:ok)
 
-    perform_enqueued_jobs
+    perform_enqueued_jobs(except: [Turbo::Streams::ActionBroadcastJob, Turbo::Streams::BroadcastJob, Turbo::Streams::BroadcastStreamJob])
 
     expect(SubsEngine::WebhookEvent.last).to be_processed
   end

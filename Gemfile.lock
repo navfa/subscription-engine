@@ -12,6 +12,7 @@ PATH
       rails (~> 8.0)
       statesman (~> 12.0)
       stripe (~> 12.0)
+      turbo-rails (~> 2.0)
       view_component (~> 3.0)
 
 GEM
@@ -113,6 +114,7 @@ GEM
       irb (~> 1.10)
       reline (>= 0.3.8)
     diff-lcs (1.6.2)
+    docile (1.4.1)
     drb (2.2.3)
     dry-core (1.2.0)
       concurrent-ruby (~> 1.0)
@@ -316,6 +318,12 @@ GEM
       rubocop (~> 1.81)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
+    simplecov (0.22.0)
+      docile (~> 1.1)
+      simplecov-html (~> 0.11)
+      simplecov_json_formatter (~> 0.1)
+    simplecov-html (0.13.2)
+    simplecov_json_formatter (0.1.4)
     statesman (12.1.0)
     stringio (3.2.0)
     stripe (12.6.0)
@@ -324,6 +332,9 @@ GEM
     tsort (0.2.0)
     ttfunk (1.8.0)
       bigdecimal (~> 3.1)
+    turbo-rails (2.0.23)
+      actionpack (>= 7.1.0)
+      railties (>= 7.1.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.2.0)
@@ -367,6 +378,7 @@ DEPENDENCIES
   rubocop
   rubocop-rails
   rubocop-rspec
+  simplecov
   subs_engine!
   webmock
 

@@ -3,26 +3,26 @@
   <h1>Billing Dashboard</h1>
 
   <div class="subs-engine-metrics">
-    <%= render MetricCardComponent.new(
+    <%= render SubsEngine::MetricCardComponent.new(
       label: 'Monthly Recurring Revenue',
       value: number_to_currency(@mrr / 100.0),
       style: :positive
     ) %>
-    <%= render MetricCardComponent.new(
+    <%= render SubsEngine::MetricCardComponent.new(
       label: 'Active Subscriptions',
       value: @active_count
     ) %>
-    <%= render MetricCardComponent.new(
+    <%= render SubsEngine::MetricCardComponent.new(
       label: 'Churn Rate (30d)',
       value: "#{@churn_rate}%",
       style: @churn_rate > 5 ? :negative : :default
     ) %>
   </div>
 
-  <%= render MrrChartComponent.new(data: @mrr_data) %>
+  <%= render SubsEngine::MrrChartComponent.new(data: @mrr_data) %>
 
   <h2>Subscriptions</h2>
-  <%= render SubscriptionTableComponent.new(
+  <%= render SubsEngine::SubscriptionTableComponent.new(
     subscriptions: @subscriptions,
     current_status: @subscription_status,
     page: @subscription_page,

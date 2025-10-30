@@ -2,6 +2,8 @@
 
 module SubsEngine
   class SubscriptionTableComponent < ViewComponent::Base
+    include Turbo::FramesHelper
+
     STATES = [
       SubscriptionStateMachine::ACTIVE,
       SubscriptionStateMachine::TRIALING,
