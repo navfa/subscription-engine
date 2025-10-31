@@ -5,7 +5,7 @@ module SubsEngine
     extend Dry::Initializer
     include Dry::Monads[:result]
 
-    option :gateway, default: -> { StripeGateway.new }
+    option :gateway, default: -> { SubsEngine.configuration.default_gateway }
     option :subscription_repository, default: -> { SubscriptionRepository.new }
 
     def call(customer:, plan:)
@@ -59,8 +59,11 @@ module SubsEngine
     end
 
     def activate(subscription)
-      subscription.transition_to(:active, stripe_subscription_id: subscription.stripe_subscription_id)
-      Success(subscription)
+      if subscription.transition_to(:active, stripe_subscription_id: subscription.stripe_subscription_id)
+        Success(subscription)
+      else
+        Failure[:transition_failed, subscription]
+      end
     end
   end
 end

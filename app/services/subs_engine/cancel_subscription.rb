@@ -5,7 +5,7 @@ module SubsEngine
     extend Dry::Initializer
     include Dry::Monads[:result]
 
-    option :gateway, default: -> { StripeGateway.new }
+    option :gateway, default: -> { SubsEngine.configuration.default_gateway }
 
     def call(subscription)
       @subscription = subscription

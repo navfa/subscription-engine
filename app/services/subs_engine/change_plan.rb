@@ -5,7 +5,7 @@ module SubsEngine
     extend Dry::Initializer
     include Dry::Monads[:result]
 
-    option :gateway, default: -> { StripeGateway.new }
+    option :gateway, default: -> { SubsEngine.configuration.default_gateway }
 
     def call(subscription:, new_plan:)
       @subscription = subscription
@@ -37,6 +37,8 @@ module SubsEngine
     end
 
     def update_on_stripe
+      return Success(nil) unless @subscription.stripe_subscription_id
+
       gateway.update_subscription(
         stripe_subscription_id: @subscription.stripe_subscription_id,
         new_price_id: @new_plan.stripe_price_id
