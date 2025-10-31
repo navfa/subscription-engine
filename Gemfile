@@ -5,6 +5,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'pg'
+gem 'propshaft'
 gem 'puma'
 
 group :development, :test do
