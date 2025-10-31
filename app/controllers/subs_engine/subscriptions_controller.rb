@@ -59,6 +59,8 @@ module SubsEngine
         redirect_to subscription, notice: t('subs_engine.subscriptions.canceled')
       in Failure[:already_canceled, *]
         redirect_to @subscription, alert: t('subs_engine.subscriptions.already_canceled')
+      in Failure[:transition_failed, *]
+        redirect_to @subscription, alert: t('subs_engine.subscriptions.cancel_failed')
       in Failure[:stripe_error, *]
         redirect_to @subscription, alert: t('subs_engine.subscriptions.stripe_error')
       end

@@ -7,7 +7,7 @@ module SubsEngine
     end
 
     def cancel?
-      owner?
+      owner? || admin?
     end
 
     def destroy?
@@ -15,7 +15,7 @@ module SubsEngine
     end
 
     def update?
-      owner?
+      owner? || admin?
     end
 
     private

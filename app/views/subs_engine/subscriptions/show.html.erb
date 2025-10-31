@@ -1,17 +1,39 @@
-<h1>Subscription — <%= @subscription.plan.name %></h1>
+<div class="subs-detail">
+  <%= link_to "\u2190 Back to Dashboard", dashboard_path, class: "subs-engine-back-link" %>
 
-<%= render SubsEngine::SubscriptionStatusComponent.new(subscription: @subscription) %>
-
-<% if @subscription.current_state == 'active' && @available_plans.any? %>
-  <div class="subs-change-plan">
-    <h2>Change Plan</h2>
-    <%= form_with url: subscription_path(@subscription), scope: :subscription, method: :patch, class: 'subs-change-plan__form' do |f| %>
-      <%= f.select :plan_id, @available_plans.map { |p| [p.name, p.id] },
-                   { prompt: 'Select a new plan' },
-                   class: 'subs-select' %>
-      <%= f.submit 'Change Plan', class: 'subs-btn' %>
-    <% end %>
+  <div class="subs-detail__header">
+    <h1><%= @subscription.plan.name %></h1>
+    <%= render SubsEngine::SubscriptionStatusComponent.new(subscription: @subscription) %>
   </div>
-<% end %>
 
-<%= link_to "Back to Plans", plans_path %>
+  <div class="subs-detail__grid">
+    <div class="subs-engine-card">
+      <div class="subs-engine-card__label">Plan</div>
+      <div class="subs-engine-card__value"><%= @subscription.plan.name %></div>
+    </div>
+    <div class="subs-engine-card">
+      <div class="subs-engine-card__label">Amount</div>
+      <div class="subs-engine-card__value"><%= number_to_currency(@subscription.plan.amount_cents / 100.0) %>/mo</div>
+    </div>
+    <div class="subs-engine-card">
+      <div class="subs-engine-card__label">Customer</div>
+      <div class="subs-engine-card__value subs-engine-card__value--small"><%= @subscription.customer.email %></div>
+    </div>
+    <div class="subs-engine-card">
+      <div class="subs-engine-card__label">Created</div>
+      <div class="subs-engine-card__value subs-engine-card__value--small"><%= @subscription.created_at.strftime('%b %d, %Y') %></div>
+    </div>
+  </div>
+
+  <% if @subscription.current_state == SubsEngine::SubscriptionStateMachine::ACTIVE && @available_plans.any? %>
+    <div class="subs-detail__section">
+      <h2>Change Plan</h2>
+      <%= form_with url: subscription_path(@subscription), scope: :subscription, method: :patch, class: 'subs-detail__form' do |f| %>
+        <%= f.select :plan_id, @available_plans.map { |p| ["#{p.name} — #{number_to_currency(p.amount_cents / 100.0)}/mo", p.id] },
+                     {},
+                     class: 'subs-select' %>
+        <%= f.submit 'Change Plan', class: 'subs-btn subs-btn--primary' %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
