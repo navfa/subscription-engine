@@ -42,3 +42,6 @@ spec/dummy/db/*.sqlite3
 
 # Coverage
 /coverage/
+
+# Lockfile (gem — let consumers resolve)
+Gemfile.lock
