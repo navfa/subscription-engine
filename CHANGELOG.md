@@ -5,12 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.7.0] - 2025-10-31
 
 ### Added
 - GitHub Actions CI pipeline with RSpec and RuboCop
-- SimpleCov coverage reporting
+- SimpleCov coverage reporting with 85% minimum threshold
+- Configurable gateway (`config.gateway = :fake` for demo/testing)
+- FakeGateway for Stripe-free local development
+- Propshaft asset pipeline for the dummy app
+- Subscription detail page with card grid layout
+- ENV-driven configuration (`GLOBAL_CURRENCY`, `TRIAL_PERIOD_DAYS`)
+- Demo app with seed data and auto-authenticated admin
+- PR template, SECURITY.md, CONTRIBUTING.md
+- README with screenshots, badges, and full documentation
 - This CHANGELOG
+
+### Changed
+- Services use `SubsEngine.configuration.default_gateway` instead of hardcoded `StripeGateway.new`
+- Subscription policies allow admin access for cancel and update
+- Dashboard CSS rewritten with Linear/Stripe-inspired design (BEM naming)
+- Cancel button changed from red button to ghost text link
+
+### Fixed
+- Missing `Failure[:transition_failed]` case in SubscriptionsController#destroy
+- `SubscribeCustomer#activate` now handles transition failure
+- `ChangePlan#update_on_stripe` guards nil `stripe_subscription_id`
+- Chartkick "No charting libraries found" error (gem assets via Propshaft)
 
 ## [0.6.0] - 2025-10-27
 
