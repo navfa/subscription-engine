@@ -18,7 +18,14 @@ RSpec.describe 'Subscription lifecycle', type: :request do
     sign_in_as(user)
     customer
     plan
+    SubsEngine.configuration.gateway = :stripe
+    SubsEngine.configuration.instance_variable_set(:@default_gateway, nil)
     allow(Stripe::Subscription).to receive_messages(create: stripe_sub, cancel: canceled_sub)
+  end
+
+  after do
+    SubsEngine.configuration.gateway = :fake
+    SubsEngine.configuration.instance_variable_set(:@default_gateway, nil)
   end
 
   it 'subscribes a customer to a plan' do

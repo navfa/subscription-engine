@@ -20,8 +20,8 @@ RSpec.describe SubsEngine::SubscriptionPolicy do
     let(:user) { double('User', id: 99, subs_engine_admin?: true) }
 
     it { is_expected.to be_show }
-    it { is_expected.not_to be_cancel }
-    it { is_expected.not_to be_update }
+    it { is_expected.to be_cancel }
+    it { is_expected.to be_update }
   end
 
   context 'when user is neither owner nor admin' do

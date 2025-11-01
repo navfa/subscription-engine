@@ -10,7 +10,7 @@ RSpec.configure do |config|
   config.include AuthenticationHelper, type: :request
 
   config.after(:each, type: :request) do
-    if SubsEngine::ApplicationController.method_defined?(:current_user)
+    if SubsEngine::ApplicationController.method_defined?(:current_user, false)
       SubsEngine::ApplicationController.remove_method(:current_user)
     end
   end

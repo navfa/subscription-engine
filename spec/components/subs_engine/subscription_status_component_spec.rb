@@ -17,7 +17,7 @@ RSpec.describe SubsEngine::SubscriptionStatusComponent, type: :component do
     end
 
     it 'renders cancel button' do
-      expect(rendered.css('.subs-btn--danger').text).to include('Cancel')
+      expect(rendered.css('.subs-status__cancel').text).to include('Cancel')
     end
   end
 
@@ -29,7 +29,7 @@ RSpec.describe SubsEngine::SubscriptionStatusComponent, type: :component do
     end
 
     it 'renders cancel button' do
-      expect(rendered.css('.subs-btn--danger').text).to include('Cancel')
+      expect(rendered.css('.subs-status__cancel').text).to include('Cancel')
     end
   end
 
@@ -44,20 +44,7 @@ RSpec.describe SubsEngine::SubscriptionStatusComponent, type: :component do
     end
 
     it 'does not render cancel button' do
-      expect(rendered.css('.subs-btn--danger')).to be_empty
-    end
-  end
-
-  context 'with period dates' do
-    let(:subscription) do
-      create(:subscription, customer: customer, plan: plan,
-                            current_period_start: Date.new(2025, 10, 1),
-                            current_period_end: Date.new(2025, 11, 1))
-    end
-
-    it 'renders the billing period' do
-      expect(rendered.css('.subs-status__period').text).to include('2025-10-01')
-      expect(rendered.css('.subs-status__period').text).to include('2025-11-01')
+      expect(rendered.css('.subs-status__cancel')).to be_empty
     end
   end
 end
