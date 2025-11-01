@@ -25,5 +25,4 @@ RSpec.describe SubsEngine::CalculateMrrTrend do
       expect(result.value!).to be_a(Hash)
     end
   end
-
 end

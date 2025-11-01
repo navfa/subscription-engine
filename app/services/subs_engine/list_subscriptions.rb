@@ -19,7 +19,11 @@ module SubsEngine
     private
 
     def fetch_subscriptions
-      scope = @status.present? ? subscription_repository.find_by_state(@status) : subscription_repository.find_all_with_details
+      scope = if @status.present?
+                subscription_repository.find_by_state(@status)
+              else
+                subscription_repository.find_all_with_details
+              end
       records = scope.offset((@page - 1) * PER_PAGE).limit(PER_PAGE)
       total = scope.count
 

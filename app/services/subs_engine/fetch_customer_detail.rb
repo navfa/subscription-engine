@@ -24,10 +24,10 @@ module SubsEngine
 
     def build_detail(customer)
       Success({
-        customer: customer,
-        subscriptions: subscription_repository.find_active_by_customer(customer),
-        invoices: invoice_repository.find_by_customer(customer)
-      })
+                customer: customer,
+                subscriptions: subscription_repository.find_active_by_customer(customer),
+                invoices: invoice_repository.find_by_customer(customer)
+              })
     end
   end
 end

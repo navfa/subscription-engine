@@ -15,7 +15,7 @@ RSpec.describe SubsEngine::FetchCustomerDetail do
       create(:invoice, customer: customer, subscription: sub)
     end
 
-    it 'returns success with customer detail' do
+    it 'returns success with customer detail' do # rubocop:disable RSpec/MultipleExpectations
       expect(result).to be_success
       expect(result.value![:customer]).to eq(customer)
       expect(result.value![:subscriptions].count).to eq(1)

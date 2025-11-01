@@ -19,7 +19,7 @@ module SubsEngine
       @mrr_data = CalculateMrrTrend.new.call.value!
     end
 
-    def load_subscriptions
+    def load_subscriptions # rubocop:disable Metrics/AbcSize
       result = ListSubscriptions.new.call(
         status: params[:status],
         page: params[:page]
