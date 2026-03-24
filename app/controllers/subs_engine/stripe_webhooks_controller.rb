@@ -8,10 +8,15 @@ module SubsEngine
       event = construct_event
       return head :bad_request unless event
 
-      webhook_event = persist_event(event)
-      return head :ok unless webhook_event
+      result = RecordWebhookEvent.new.call(event)
 
-      ProcessWebhookEventJob.perform_later(webhook_event.id)
+      case result
+      in Dry::Monads::Success(webhook_event)
+        ProcessWebhookEventJob.perform_later(webhook_event.id)
+      in Dry::Monads::Failure[:duplicate | :invalid]
+        nil
+      end
+
       head :ok
     end
 
@@ -22,17 +27,6 @@ module SubsEngine
       sig_header = request.env['HTTP_STRIPE_SIGNATURE']
       Stripe::Webhook.construct_event(payload, sig_header, webhook_secret)
     rescue Stripe::SignatureVerificationError, JSON::ParserError
-      nil
-    end
-
-    def persist_event(event)
-      webhook_event = WebhookEvent.create(
-        stripe_event_id: event.id,
-        event_type: event.type,
-        payload: event.data.to_h
-      )
-      webhook_event.persisted? ? webhook_event : nil
-    rescue ActiveRecord::RecordNotUnique
       nil
     end
 
