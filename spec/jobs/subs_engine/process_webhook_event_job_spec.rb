@@ -44,5 +44,15 @@ RSpec.describe SubsEngine::ProcessWebhookEventJob do
         expect(dispatcher).not_to have_received(:call)
       end
     end
+
+    context 'when event does not exist' do
+      before { allow(dispatcher).to receive(:call) }
+
+      it 'returns without processing' do
+        described_class.perform_now(0)
+
+        expect(dispatcher).not_to have_received(:call)
+      end
+    end
   end
 end

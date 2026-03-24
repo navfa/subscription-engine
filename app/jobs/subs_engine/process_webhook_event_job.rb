@@ -5,7 +5,10 @@ module SubsEngine
     queue_as :webhooks
 
     def perform(webhook_event_id)
-      event = WebhookEvent.find(webhook_event_id)
+      event = WebhookEventRepository.new.find_by_id(webhook_event_id) # rubocop:disable Rails/DynamicFindBy
+      return if event.none?
+
+      event = event.value!
       return if event.processed?
 
       result = WebhookEventDispatcher.new.call(event)
