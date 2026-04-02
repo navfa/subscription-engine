@@ -37,5 +37,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'statesman', '~> 12.0'
   spec.add_dependency 'stripe', '~> 12.0'
   spec.add_dependency 'turbo-rails', '~> 2.0'
-  spec.add_dependency 'view_component', '~> 3.0'
+  spec.add_dependency 'view_component', '>= 3', '< 5'
 end
